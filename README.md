@@ -58,6 +58,8 @@ Required attributes are realized through method parameters:
                                           //   lazy val elem$1 = Schema.a("#")
                                           // }
 
+**Note:** Default and named parameters are currently unsupported by scala macros. Therefore they are also unsupported in `clide.xml`. This will change with the release of scala 2.11.1
+
 Nesting
 ---
 
@@ -68,6 +70,7 @@ For now, the support for nesting is only imperative. That means nested elements 
       case class MyParent(name: String) {
         var children = Buffer.empty[MyChild]
         def +=(child: MyChild) = children += child
+        def +=(child: MyParent) = children += child
       }
     }
     
@@ -76,6 +79,58 @@ For now, the support for nesting is only imperative. That means nested elements 
     // {
     //   lazy val elem$1 = Schema.MyParent("Mother")
     //   lazy val elem$2 = Schema.MyChild("Son")
+    //   lazy val elem
     //   elem$1 += elem$2
     //   elem$1
     // }
+
+Plain Text Nodes
+---
+
+Plain text nodes are added as children of type string. (You could of course again introduce implicit conversions here)
+
+    object Schema {
+      case class Paragraph() {
+        var text: String = ""
+        def +=(text: String) = this.text += text
+        def +=(paragraph: Paragraph) = this.text += paragraph.text
+      }
+    }
+    
+    XML.inline(Schema,"""
+      <Paragraph>
+        Some text
+        <Paragraph>Nested</Paragraph>
+      </Paragraph>
+    """
+    // expands to:
+    // {
+    //   lazy val elem$1 = Schema.Paragraph()
+    //   elem$1 += "\n    Some text\n    "
+    //   lazy val elem$2 = Schema.Paragraph()
+    //   elem$2 += "Nested"
+    //   elem$1 += elem$2
+    //   elem$2
+    // }
+    
+**Note:** Whitespace is not dropped in xml
+
+Escaped Scala Code
+---
+
+You can include arbitrary scala code between braces:
+
+    val subject = "dlroW"
+    XML.inline(Schema,"<div width='{24 * 6}' height="{4}">Hello { subject.reverse }!</div>
+    // expands to:
+    // { 
+    //    lazy val elem$1 = Schema.div()
+    //    elem$1.width = 24 * 6
+    //    elem$1 += "Hello "
+    //    elem$1 += subject.reverse
+    //    elem$1 += "!"
+    //    elem$1
+    // }
+    
+The code can be of any type. This way you can also set non-string attributes.
+
