@@ -1,4 +1,4 @@
-A compile time XML library for Scala
+A compile time XML unmarshalling for Scala
 =========
 
 `clide.xml` is a set of scala macros to declaratively configure hierarchical data structures using xml files at compile time with static type checking.
