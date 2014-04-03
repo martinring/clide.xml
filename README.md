@@ -5,7 +5,7 @@ Compile time XML unmarshalling for Scala
 
 The main motivation for the project is the separation of business logic and views. In conjunction with the `clide.reactive.ui` library (will be published shortly) it allows for declarative view bindings in the style of *angular.js* but without the runtime compilation overhead and with static type checks.
 
-The main idea behind `clide.xml` is that an arbitrary Scala object serves as a schema definition. XML tags then represent method or constructor calls. Attributes represent either required parameters of the construction method or assignments to the constructed type.
+The main idea behind `clide.xml` is that an arbitrary Scala object serves as a schema definition. XML tags then represent method or constructor calls. Attributes represent either required parameters of the construction method or assignments to properties of the constructed type.
 
 Here comes a simple Schema example wich only supports html anchor tags:
 
